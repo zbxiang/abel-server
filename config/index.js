@@ -2,5 +2,9 @@
  * 配置文件
  */
 module.exports = {
-    URL: 'mongodb://127.0.0.1:27017/abel-manager'
+    host: 'localhost',
+    user: 'root',
+    password: 'root123',
+    port: '3306',
+    database: 'abel-manager'
 }

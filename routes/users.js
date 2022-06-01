@@ -2,7 +2,7 @@
  * 用户管理模块
  */
 const router = require('koa-router')()
-const User = require('./../models/userSchema')
+const User = require('../models/userModel')
 const util = require('./../utils/util')
 
 router.prefix('/users')
@@ -10,6 +10,8 @@ router.prefix('/users')
 router.post('/login', async (ctx) => {
   try {
     const { userName, userPwd } = ctx.request.body
+    console.log('dsfkjgkjdsjgdsjg')
+    console.log(userName, userPwd)
     const res = await User.findOne({
       userName,
       userPwd
