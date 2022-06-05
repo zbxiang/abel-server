@@ -23,7 +23,6 @@ class InitManager {
         requireDirectory(module, apiDirectory, {
             visit: whenLoadModule
         })
-
         function whenLoadModule(obj) {
             if (obj instanceof Router) {
                 InitManager.router.use(obj.routes(), obj.allowedMethods())

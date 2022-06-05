@@ -1,20 +1,10 @@
-const sequelize = require('../core/db')
+const { queryOne } = require('./../core/db')
 
-const { Sequelize, Model } = require('sequelize')
-
-// define
-class User extends Model {
-    static async userLogin(userName, userPwd) {
-        const user = await User.findOne({
-            where: {
-                userName,
-                userPwd
-            }
-        })
-        return user
-    }
+const login = function ({userName, userPwd}, next) {
+    const sql = `select * from user where userName='${userName}' and userPwd='${userPwd}'`
+    return queryOne(sql, next)
 }
 
 module.exports = {
-    User
+    login
 }
