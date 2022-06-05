@@ -4,7 +4,7 @@ const util = require('../../../utils/util')
 const jwt = require('jsonwebtoken')
 const {PWD_SALT,PRIVATE_KEY, JWT_EXPIRED} = require('./../../../config/index')
 const md5 = require('md5')
-router.prefix('/v1/user')
+router.prefix('/users')
 
 // 登录
 router.post('/login', async (ctx, next) => {
@@ -26,6 +26,13 @@ router.post('/login', async (ctx, next) => {
     } catch (error) {
         ctx.body = util.fail(error.msg)
     }
+})
+
+// 获取用户对应的权限菜单
+router.get('/getPermissionList', async (ctx) => {
+    let authorization = ctx.request.headers.authorization
+    let { data } = util.decoded(authorization)
+    console.log(authorization)
 })
 
 module.exports = router

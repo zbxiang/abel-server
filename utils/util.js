@@ -42,5 +42,11 @@ module.exports = {
         return {
             code,data,msg
         }
+    },
+    CODE,
+    decoded(authorization) {
+        if (authorization) {
+            
+        }
     }
 }

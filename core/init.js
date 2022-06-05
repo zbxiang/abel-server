@@ -25,6 +25,7 @@ class InitManager {
         })
         function whenLoadModule(obj) {
             if (obj instanceof Router) {
+                console.log(obj.routes())
                 InitManager.router.use(obj.routes(), obj.allowedMethods())
             }
         }
