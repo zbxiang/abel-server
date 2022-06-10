@@ -10,8 +10,22 @@ router.get('/list', async (ctx) => {
     const params = {}
     if (menuName) params.menuName = menuName
     if (menuState) params.menuState = menuState
-    let rootList = await menuService.menuList(params) || []
+    let rootList = await menuService.getMenuList(params) || []
     console.log(menuName, menuState)
+})
+
+// 菜单编辑、删除、新增功能
+router.post('/operate', async (ctx) => {
+    console.log(ctx.request.body)
+    const { _id, action, ...params } = ctx.request.body
+    let res, info
+    try {
+        if (action == 'add') {
+            res = await menuService.addMenu(params)
+        }
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
+    }
 })
 
 module.exports = router
