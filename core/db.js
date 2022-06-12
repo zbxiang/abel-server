@@ -55,9 +55,18 @@ const queryOne = function (sql) {
     })
 }
 
+const andLike = function (where, k, v) {
+    if (where === 'where') {
+        return where + ` ${k} like '%${v}%'`
+    } else {
+        return where + ` and ${k} like '%${v}%'`
+    }
+}
+
 module.exports = {
     connect,
     querySql,
-    queryOne
+    queryOne,
+    andLike
 }
 
