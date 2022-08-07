@@ -12,5 +12,5 @@ module.exports = {
     debug: true,
     PWD_SALT: 'admin_abel_node',
     PRIVATE_KEY: 'admin_abel_node_test_zbxiang_xyz',
-    JWT_EXPIRED: 60 * 60
+    JWT_EXPIRED: 30 * 60
 }
