@@ -24,6 +24,7 @@ module.exports = {
         pageNum *= 1;
         pageSize *= 1;
         const skipIndex = (pageNum - 1) * pageSize;
+        console.log(pageSize)
         return {
             page: {
                 pageNum,

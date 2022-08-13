@@ -4,37 +4,59 @@ const roleService = require('./../../../models/roleModel')
 
 router.prefix('/roles')
 
-// 角色操作：创建、编辑和删除
-router.post('/operate', async (ctx) => {
-    const { _id, roleName, remark, action } = ctx.request.body;
-    console.log(ctx.request.body)
-    let res, info;
+// 按页获取角色列表
+router.get('/list', async (ctx) => {
     try {
-        if (action == 'create') {
-            res = await roleService.addRole({ roleName, remark })
-            info = "创建成功"
-        } // else if (action == 'edit') {
-    //     if (_id) {
-    //       let params = { roleName, remark }
-    //       params.update = new Date();
-    //       res = await Role.findByIdAndUpdate(_id, params)
-    //       info = "编辑成功"
-    //     } else {
-    //       ctx.body = util.fail("缺少参数params: _id")
-    //       return;
-    //     }
-    //   } else {
-    //     if (_id) {
-    //       res = await Role.findByIdAndRemove(_id)
-    //       info = "删除成功"
-    //     } else {
-    //       ctx.body = util.fail("缺少参数params: _id")
-    //       return;
-    //     }
-    //   }
-        ctx.body = util.success(res, info)
+        const params = ctx.request.query
+        let res = await roleService.getRolesList(params) || []
+        ctx.body = util.success(res, '操作成功')
+    }catch (error) {
+        ctx.body = util.fail(`查询失败：${error.stack}`)
+    }
+})
+
+// 角色操作：创建、编辑和删除
+// 添创建
+router.post('/add', async (ctx) => {
+    try {
+        const { roleName, remark } = ctx.request.body
+        await roleService.addRole({ roleName, remark })
+        ctx.body = util.success(null, '操作成功')
     } catch (error) {
-      ctx.body = util.fail(error.stack)
+        ctx.body = util.fail(error.stack)
+    }
+    
+})
+
+// 编辑
+router.post('/update', async (ctx) => {
+    try {
+        const { _id, roleName, remark } = ctx.request.body
+        if (_id) {
+            await roleService.updateRole({ _id, roleName, remark })
+            ctx.body = util.success(null, '操作成功')
+        }else {
+            ctx.body = util.fail('缺少参数params: _id')
+            return
+        }
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
+    }
+})
+
+// 删除
+router.post('/delete', async (ctx) => {
+    try {
+        const { _id } = ctx.request.body
+        if (_id) {
+            await roleService.delteRole({ _id })
+            ctx.body = util.success(null, '操作成功')
+        }else {
+            ctx.body = util.fail('缺少参数params: _id')
+            return
+        }
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
     }
 })
 

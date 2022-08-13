@@ -3,30 +3,38 @@ const tableName = 'roles'
 const util = require('./../utils/util')
 
 // 获取角色表信息
-const getRoleList = async function (query) {
-    let sortSql
-    let getRoleSql
-    if (query && query.sort) {
-        const { sort } = query
-        if (sort) {
-            const symbol = sort[0]
-            const order = symbol === '+' ? 'asc' : 'desc'
-            sortSql = ` order by id ${order}`
-        }
-        getRoleSql = `select * from ${tableName} ` + sortSql
-    } else {
-        getRoleSql = `select * from ${tableName} `
+const getRolesList = async function (query) {
+    const {
+        roleName,
+        pageSize,
+        pageNum,
+        sort
+    } = query
+    const { page, skipIndex } = util.pager({ pageNum, pageSize })
+    const params = {}
+    if (roleName) params.roleName = roleName
+    let RolesListSql = `select * from ${tableName}`
+    let where = 'where'
+    roleName && (where = db.andLike(where, 'roleName', roleName))
+    if (where !== 'where') {
+        RolesListSql = `${RolesListSql} ${where}`
     }
-    return new Promise((resolve, reject) => {
-        db.querySql(getRoleSql)
-            .then(result => {
-                resolve(result)
-            })
-            .catch(err => {
-                reject(new Error('获取角色失败'))
-            })
-    })
-}
+    if (sort) {
+        const symbol = sort[0]
+        const column = sort.slice(1, sort.length)
+        const order = symbol === '+' ? 'asc' : 'desc'
+        RolesListSql = `${RolesListSql} order by ${column} ${order}`
+    }
+    RolesListSql = `${RolesListSql} limit ${page.pageSize} offset ${skipIndex}`
+    let countSql = `select count(*) as count from ${tableName}`
+    if (where !== 'where') {
+        countSql = `${countSql} ${where}`
+    }
+    const lists = await db.querySql(RolesListSql)
+    console.log(RolesListSql, '\n', countSql)
+    const count = await db.querySql(countSql)
+    return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
+} 
 
 // 增加角色
 const addRole = async function (query) {
@@ -45,7 +53,40 @@ const addRole = async function (query) {
     })
 }
 
+// 更新角色
+const updateRole = async function (query) {
+    return new Promise((reslove, reject) => {
+        const {_id, roleName, remark} = query
+        const updateTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
+        const updateRoleSql = `update ${tableName} set roleName='${roleName}', remark='${remark}', updateTime='${updateTime}' where _id='${_id}'`
+        db.querySql(updateRoleSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('更新角色失败'))
+            })
+    })
+}
+
+// 删除角色
+const delteRole = async function (query) {
+    return new Promise((reslove, reject) => {
+        const {_id } = query
+        const deleteRoleSql = `delete from ${tableName} where _id='${_id}'`
+        db.querySql(deleteRoleSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('删除角色失败'))
+            })
+    })
+}
+
 module.exports = {
-    getRoleList,
-    addRole
+    getRolesList,
+    addRole,
+    updateRole,
+    delteRole
 }
