@@ -41,8 +41,12 @@ const getMenuList = async function (query) {
 // 添加菜单
 const addMenu = function (query) {
     return new Promise(async (reslove, reject) => {
+        const { sort } = query
         const keys = []
         const values = []
+        query.createTime = util.formateDate(new Date())
+        query.updateTime = util.formateDate(new Date())
+        sort == null ? query.sort = 0 : query.sort = sort
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
                 keys.push(`\`${key}\``)
@@ -54,10 +58,10 @@ const addMenu = function (query) {
             const keysString = keys.join(',')
             const valuesString = values.join(',')
             addMenuSql = `${addMenuSql}${keysString}) VALUES (${valuesString})`
-            const selectSql = `select menuName, path from ${tableName} where menuName='${query.menuName}' and path='${query.path}'`
-            const addMenuFlag = query.path ? await db.querySql(selectSql) : []
+            const selectSql = `select menuName, url from ${tableName} where menuName='${query.menuName}' and url='${query.url}'`
+            const addMenuFlag = query.url ? await db.querySql(selectSql) : []
             if ( addMenuFlag && addMenuFlag.length > 0) {
-                reject(new Error('path已存在, 无法添加'))
+                reject(new Error('url已存在, 无法添加'))
             } else {
                 db.querySql(addMenuSql)
                     .then(results => {
@@ -71,7 +75,63 @@ const addMenu = function (query) {
     })
 }
 
+// 更新菜单
+const updateMenu = function (query) {
+    return new Promise(async (reslove, reject) => {
+        const { sort } = query
+        const entry = []
+        const _id = query._id
+        const connectSql = `where _id='${_id}'`
+        delete query._id
+        delete query.createTime
+        sort == null ? query.sort = 0 : query.sort = sort
+        query.updateTime = util.formateDate(new Date())
+        Object.keys(query).forEach(key => {
+            if (query.hasOwnProperty(key)) {
+                entry.push(`\`${key}\`='${query[key]}'`)
+            }
+        })
+        if (entry.length > 0) {
+            const selectUrl = `select _id from ${tableName} where url='${query.url}'`
+            const addMenuFlag = await db.querySql(selectUrl)
+            if (addMenuFlag.length > 0 && addMenuFlag[0]._id !== _id * 1) {
+                reject(new Error('URL已存在，无法添加'))
+            } else {
+                if (isNaN(query.sort)) {
+                    reject(new Error('sort字段只能为数字'))
+                }
+                let addMenuSql = `UPDATE \`${tableName}\` SET`
+                addMenuSql = `${addMenuSql} ${entry.join(',')} ${connectSql}`
+                db.querySql(addMenuSql)
+                    .then(res => {
+                        reslove(res)
+                    })
+                    .catch(err => {
+                        reject(new Error('更新菜单失败'))
+                    })
+            }
+        }
+    })
+}
+
+// 删除菜单
+const deleteMenu = function (query) {
+    return new Promise(async (reslove, reject) => {
+        const { _id } = query
+        const deleteMenuSql = `delete from ${tableName} where _id='${_id}'`
+        db.querySql(deleteMenuSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('删除失败'))
+            })
+    })
+}
+
 module.exports = {
     getMenuList,
-    addMenu
+    addMenu,
+    updateMenu,
+    deleteMenu
 }

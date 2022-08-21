@@ -2,6 +2,20 @@ const db = require('./../core/db')
 const tableName = 'roles'
 const util = require('./../utils/util')
 
+// 获取所有角色列表
+const getRolesAllList = async function () {
+    return new Promise(async (reslove, reject) => {
+        let RolesAllListSql = `select _id, roleName from ${tableName}`
+        db.querySql(RolesAllListSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('获取列表失败'))
+            })
+    })
+}
+
 // 获取角色表信息
 const getRolesList = async function (query) {
     const {
@@ -72,7 +86,7 @@ const updateRole = async function (query) {
 // 删除角色
 const delteRole = async function (query) {
     return new Promise((reslove, reject) => {
-        const {_id } = query
+        const { _id } = query
         const deleteRoleSql = `delete from ${tableName} where _id='${_id}'`
         db.querySql(deleteRoleSql)
             .then(res => {
@@ -85,6 +99,7 @@ const delteRole = async function (query) {
 }
 
 module.exports = {
+    getRolesAllList,
     getRolesList,
     addRole,
     updateRole,

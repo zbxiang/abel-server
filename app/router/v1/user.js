@@ -27,6 +27,44 @@ router.post('/login', async (ctx, next) => {
     }
 })
 
+// 用户列表
+router.get('/list', async (ctx, next) => {
+    try {
+        // 根据条件查询所有用户列表
+        const params = ctx.request.query
+        let res = await userService.getUserList(params) || []
+        ctx.body = util.success(res, '操作成功')
+    } catch (error) {
+        ctx.body = util.fail(`查询异常：${error.stack}`)
+    }
+})
+
+// 获取全量用户列表
+router.get('/all/list', async (ctx) => {
+    try {
+        let res = await userService.getUserAllList() || []
+        ctx.body = util.success(res, '操作成功')
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
+    }
+})
+
+// 用户新增
+router.post('/addUser', async (ctx) => {
+    try {
+        const query = ctx.request.body
+        const{ userName, userEmail } = query
+        if (!userName || !userEmail) {
+            ctx.body = util.fail('参数错误', util.CODE.PARAM_ERROR)
+            return
+        }
+        await userService.addUser(query)
+        ctx.body = util.success(null, '操作成功')
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
+    }
+})
+
 // 获取用户对应的权限菜单
 router.get('/getPermissionList', async (ctx) => {
     let authorization = ctx.request.headers.authorization

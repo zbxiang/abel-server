@@ -7,7 +7,8 @@ module.exports = {
         user: 'root',
         password: 'root123',
         port: '3306',
-        dbName: 'abel-manager'
+        dbName: 'abel-manager',
+        timezone: '08:00'
     },
     debug: true,
     PWD_SALT: 'admin_abel_node',

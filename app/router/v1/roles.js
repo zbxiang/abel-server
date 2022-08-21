@@ -4,6 +4,16 @@ const roleService = require('./../../../models/roleModel')
 
 router.prefix('/roles')
 
+// 查询所有角色列表
+router.get('/allList', async (ctx) => {
+    try {
+        let res = await roleService.getRolesAllList() || []
+        ctx.body = util.success(res, '操作成功')
+    } catch (error){
+        ctx.body = util.fail(`查询失败：${error.stack}`)
+    }
+})
+
 // 按页获取角色列表
 router.get('/list', async (ctx) => {
     try {

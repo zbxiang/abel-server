@@ -2,7 +2,7 @@
  * 数据库连接
  */
 const mysql = require('mysql')
-const { host, user, password, port, dbName } = require('../config/index').database
+const { host, user, password, port, dbName, timezone } = require('../config/index').database
 const debug = require('../config/index').debug
 const log4js = require('./../utils/log4j')
 
@@ -45,6 +45,7 @@ const connect = function (){
         password,
         port,
         database: dbName,
+        timezone,
         multipleStatements: true
     })
 }

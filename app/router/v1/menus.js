@@ -18,16 +18,34 @@ router.get('/list', async (ctx) => {
 })
 
 // 菜单编辑、删除、新增功能
-router.post('/operate', async (ctx) => {
-    console.log(ctx.request.body)
-    const { _id, action, ...params } = ctx.request.body
-    let res, info
+// 新增
+router.post('/addMenu', async (ctx) => {
     try {
-        if (action == 'add') {
-            res = await menuService.addMenu(params)
-            info = '创建成功'
-        }
-        ctx.body = util.success('', info)
+        const query = ctx.request.body
+        await menuService.addMenu(query)
+        ctx.body = util.success(null, '操作成功')
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
+    }
+})
+
+// 编辑
+router.post('/updateMenu', async (ctx) => {
+    try {
+        const query = ctx.request.body
+        await menuService.updateMenu(query)
+        ctx.body = util.success(null, '操作成功')
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
+    }
+})
+
+// 编辑
+router.get('/deleteMenu', async (ctx) => {
+    try {
+        const query = ctx.request.query
+        await menuService.deleteMenu(query)
+        ctx.body = util.success(null, '操作成功')
     } catch (error) {
         ctx.body = util.fail(error.stack)
     }
