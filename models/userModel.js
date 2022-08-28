@@ -32,6 +32,10 @@ const getUserList = async (query) => {
     const newUserSql = `${userSql} ${sortSql} ${pageSql}`
     const count = await db.querySql(newCountSql)
     const lists = await db.querySql(newUserSql)
+    lists.map((item) => {
+        item.deptId = eval(item.deptId)
+        item.roleList = eval(item.roleList)
+    })
     return {lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page}
 }
 
@@ -49,6 +53,21 @@ const getUserAllList = async () => {
     })
 }
 
+// 查找用户
+const findOneUser = async (query) => {
+    return new Promise((reslove, reject) => {
+        const {userName, userEmail} = query
+        const userOneSql = `select userId, userName, userEmail from ${tableName} where userName='${userName}' and userEmail='${userEmail}'`
+        db.queryOne(userOneSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('查找用户失败'))
+            })
+    })
+}
+
 // 用户新增
 const addUser = async (query) => {
     return new Promise(async (reslove, reject) => {
@@ -56,6 +75,8 @@ const addUser = async (query) => {
         const values = []
         query.createTime = util.formateDate(new Date())
         query.lastLoginTime = util.formateDate(new Date())
+        query.deptId = util.arrayToString(eval(query.deptId))
+        query.roleList = util.arrayToString(eval(query.roleList))
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
                 keys.push(`\`${key}\``)
@@ -67,20 +88,44 @@ const addUser = async (query) => {
             const keyString = keys.join(',')
             const valuesString = values.join(',')
             addUserSql = `${addUserSql}${keyString}) VALUES (${valuesString})`
-            const selectSql = `select userName, userEmail from ${tableName} where userName='${query.userName}' and userEmail='${query.userEmail}'`
-            const addUserFlag = query.userEmail ? await db.querySql(selectSql) : []
-            if (addUserFlag && addUserFlag.length > 0) {
-                reject(new Error(`系统检测到有重复的用户，信息如下：${addUserFlag.userName} - ${addUserFlag.userEmail}`))
-            } else {
-                db.querySql(addUserSql)
-                    .then(results => {
-                        reslove(results)
-                    })
-                    .catch(err => {
-                        reject(new Error('用户新增项失败'))
-                    })
-            }
+            db.querySql(addUserSql)
+                .then(results => {
+                    reslove(results)
+                })
+                .catch(err => {
+                    reject(new Error('用户新增项失败'))
+                })
         }
+    })
+}
+
+// 用户编辑
+const updateUser = async (query) => {
+    return new Promise((reslove, reject) => {
+        const { userId, userName, userEmail, mobile, job, state, roleList, deptId, sex, remark } = query
+        const updateUserSql = `update ${tableName} set userName='${userName}', userEmail='${userEmail}', mobile='${mobile}', job='${job}', state='${state}', roleList='${util.arrayToString(eval(roleList))}', deptId='${util.arrayToString(eval(deptId))}', sex='${sex}', remark='${remark}' where userId='${userId}'`
+        db.querySql(updateUserSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('更新用户失败'))
+            })
+    })
+}
+
+// 用户删除/批量删除
+const deleteUser = async (query) => {
+    return new Promise((reslove, reject) => {
+        const userIds = query.userIds.join(',')
+        const deleteUserSql = `delete from ${tableName} where userId IN (${userIds})`
+        db.querySql(deleteUserSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('删除失败'))
+            })
     })
 }
 
@@ -88,5 +133,8 @@ module.exports = {
     login,
     getUserList,
     getUserAllList,
-    addUser
+    addUser,
+    findOneUser,
+    updateUser,
+    deleteUser
 }

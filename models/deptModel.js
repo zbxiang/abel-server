@@ -23,7 +23,7 @@ const addDept = async function (query) {
         const values = []
         query.createTime = util.formateDate(new Date())
         query.updateTime = util.formateDate(new Date())
-        query.parentId = eval(query.parentId)
+        query.parentId = arrayToString(eval(query.parentId.slice()))
         delete query.user
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
@@ -31,6 +31,7 @@ const addDept = async function (query) {
                 values.push(`'${query[key]}'`)
             }
         })
+        
         if (keys.length > 0 && values.length > 0) {
             let addDeptSql = `INSERT INTO \`${tableName}\` (`
             const keyString = keys.join(',')
@@ -51,6 +52,19 @@ const addDept = async function (query) {
             }
         }
     })
+}
+
+// 数组转字符串数组
+const arrayToString = function (array) {
+    let str = ''
+    if (Array.isArray(array)) {
+        str += '['
+        array.forEach((item, index) => {
+            index < array.length - 1 ?  str += `${item}` : str += `${item}, `
+        })
+        str += ']'
+    }
+    return str
 }
 
 module.exports = {

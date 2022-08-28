@@ -46,6 +46,7 @@ router.post('/addDept', async (ctx) => {
     try {
         const params = ctx.request.body
         await deptService.addDept(params)
+        ctx.body = util.success(null, '操作成功')
     } catch (error) {
         ctx.body = util.fail(error.stack)
     }

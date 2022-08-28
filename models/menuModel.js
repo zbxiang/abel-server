@@ -1,42 +1,70 @@
 const db = require('./../core/db')
+const { getTreeMenu, arrayToString } = require('./../utils/util')
 const tableName = 'menus'
 const util = require('./../utils/util')
 
 // 获取菜单列表
-const getMenuList = async function (query) {
-    const {
-        menuName, 
-        menuState, 
-        pageSize, 
-        pageNum,
-        sort
-    } = query
-    const { page, skipIndex } = util.pager({pageNum, pageSize})
-    const params = {}
-    if (menuName) params.menuName = menuName
-    if (menuState) params.menuState = menuState
-    let MenuListSql = `select * from ${tableName}`
-    let where = 'where'
-    menuName && (where = db.andLike(where, 'menuName', menuName))
-    if (where !== 'where') {
-        MenuListSql = `${MenuListSql} ${where}`
-    }
-    if (sort) {
-        const symbol = sort[0]
-        const column = sort.slice(1, sort.length)
-        const order = symbol === '+' ? 'asc' : 'desc'
-        MenuListSql = `${MenuListSql} order by ${column} ${order}`
-    }
-    MenuListSql = `${MenuListSql} limit ${page.pageSize} offset ${skipIndex}`
-    let countSql = `select count(*) as count from ${tableName}`
-    if (where !== 'where') {
-        countSql = `${countSql} ${where}`
-    }
-    const lists = await db.querySql(MenuListSql)
-    console.log(MenuListSql, '\n', countSql)
-    const count = await db.querySql(countSql)
-    return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
+const getMenuList = (query) => {
+    return new Promise(async (reslove, reject) => {
+        const { menuName, menuState } = query
+        const params = {}
+        menuName && (params.menuName  = menuName)
+        menuState && (params.menuState = menuState)
+        let MenuListSql = `select * from ${tableName}`
+        let where = 'where'
+        menuState && (where = db.and(where, 'menuState', menuState))
+        menuName && (where = db.andLike(where, 'menuName', menuName))
+        if (where !== 'where') {
+            MenuListSql = `${MenuListSql} ${where}`
+        }
+        db.querySql(MenuListSql)
+            .then(results => {
+                results.map((item) => {
+                    item.parentId = eval(item.parentId)
+                })
+                reslove(results)
+            })
+            .catch(err => {
+                reject(new Error('菜单列表获取失败'))
+            })
+    })
 }
+
+// 获取菜单列表
+// const getMenuList = async function (query) {
+//     const {
+//         menuName, 
+//         menuState, 
+//         pageSize, 
+//         pageNum,
+//         sort
+//     } = query
+//     const { page, skipIndex } = util.pager({pageNum, pageSize})
+//     const params = {}
+//     if (menuName) params.menuName = menuName
+//     if (menuState) params.menuState = menuState
+//     let MenuListSql = `select * from ${tableName}`
+//     let where = 'where'
+//     menuName && (where = db.andLike(where, 'menuName', menuName))
+//     if (where !== 'where') {
+//         MenuListSql = `${MenuListSql} ${where}`
+//     }
+//     if (sort) {
+//         const symbol = sort[0]
+//         const column = sort.slice(1, sort.length)
+//         const order = symbol === '+' ? 'asc' : 'desc'
+//         MenuListSql = `${MenuListSql} order by ${column} ${order}`
+//     }
+//     MenuListSql = `${MenuListSql} limit ${page.pageSize} offset ${skipIndex}`
+//     let countSql = `select count(*) as count from ${tableName}`
+//     if (where !== 'where') {
+//         countSql = `${countSql} ${where}`
+//     }
+//     const lists = await db.querySql(MenuListSql)
+//     console.log(MenuListSql, '\n', countSql)
+//     const count = await db.querySql(countSql)
+//     return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
+// }
 
 // 添加菜单
 const addMenu = function (query) {
@@ -46,7 +74,9 @@ const addMenu = function (query) {
         const values = []
         query.createTime = util.formateDate(new Date())
         query.updateTime = util.formateDate(new Date())
+        query.parentId = util.arrayToString(eval(query.parentId))
         sort == null ? query.sort = 0 : query.sort = sort
+        delete query._id
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
                 keys.push(`\`${key}\``)
@@ -84,6 +114,8 @@ const updateMenu = function (query) {
         const connectSql = `where _id='${_id}'`
         delete query._id
         delete query.createTime
+        delete query.children
+        query.parentId = util.arrayToString(eval(query.parentId))
         sort == null ? query.sort = 0 : query.sort = sort
         query.updateTime = util.formateDate(new Date())
         Object.keys(query).forEach(key => {

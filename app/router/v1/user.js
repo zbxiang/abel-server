@@ -50,19 +50,72 @@ router.get('/all/list', async (ctx) => {
 })
 
 // 用户新增
-router.post('/addUser', async (ctx) => {
-    try {
-        const query = ctx.request.body
-        const{ userName, userEmail } = query
-        if (!userName || !userEmail) {
-            ctx.body = util.fail('参数错误', util.CODE.PARAM_ERROR)
-            return
-        }
-        await userService.addUser(query)
-        ctx.body = util.success(null, '操作成功')
-    } catch (error) {
-        ctx.body = util.fail(error.stack)
+router.post('/add', async (ctx) => {
+    const{ userName, userEmail, mobile, job, state, roleList, deptId, sex, remark} = ctx.request.body
+    if (!userName || !userEmail || !deptId) {
+        ctx.body = util.fail('参数错误', util.CODE.PARAM_ERROR)
+        return
     }
+    const res = await userService.findOneUser({userName, userEmail})
+    if (res) {
+        ctx.body = util.fail(`系统监测到有重复的用户，信息如下：${res.userName} - ${res.userEmail}`)
+    } else {
+        try {
+            await userService.addUser({
+                userName,
+                userPwd: md5('123456'),
+                userEmail,
+                role: 1, //默认普通用户
+                roleList,
+                job,
+                state,
+                deptId,
+                mobile,
+                sex,
+                remark
+            })
+            ctx.body = util.success(null, '操作成功')
+        } catch (error) {
+            ctx.body = util.fail(error.stack)
+        }
+    }
+})
+
+// 用户编辑
+router.post('/update', async (ctx) => {
+    const{ userId, userName, userEmail, mobile, job, state, roleList, deptId, sex, remark} = ctx.request.body
+    if (!deptId) {
+        ctx.body = util.fail('部门不能为空', util.CODE.PARAM_ERROR)
+    }
+    try {
+        await userService.updateUser({
+            userId,
+            userName,
+            userEmail,
+            mobile,
+            job,
+            state,
+            roleList,
+            deptId,
+            sex,
+            remark
+        })
+        ctx.body = util.success(null, '更新成功')
+    } catch (error) {
+        ctx.body = util.fail(error.stack, '更新失败')
+    }
+})
+
+// 用户删除/批量删除
+router.post('/delete', async (ctx) => {
+    // 待删除的用户Id数组
+    const { userIds } = ctx.request.body
+    const res = await userService.deleteUser({userIds: eval(userIds)})
+    if (res.affectedRows) {
+        ctx.body = util.success(res, `共删除成功${res.affectedRows}条`)
+        return
+    }
+    ctx.body = util.fail('删除失败')
 })
 
 // 获取用户对应的权限菜单

@@ -57,7 +57,7 @@ module.exports = {
         for (let i = 0; i < rootList.length; i++) {
             let item = rootList[i]
             if (String(item.parentId.slice().pop()) == String(id)) {
-                list.push(item._doc)
+                list.push(item)
             }
         }
         list.map(item => {
@@ -93,4 +93,16 @@ module.exports = {
         }
         return fmt;
     },
+    // 数组转字符串数组
+    arrayToString(array) {
+        let str = ''
+        if (Array.isArray(array)) {
+            str += '['
+            array.forEach((item, index) => {
+                index < array.length - 1 ? str += `${item}, ` : str += `${item}`
+            })
+            str += ']'
+        }
+        return str
+    }
 }

@@ -70,4 +70,15 @@ router.post('/delete', async (ctx) => {
     }
 })
 
+// 权限设置
+router.post('/update/permission', async (ctx) => {
+    const query = ctx.request.body
+    try {
+        await roleService.findByIdAndUpdate(query)
+        ctx.body = util.success(null, "权限设置成功")
+    } catch (error) {
+        ctx.body = util.fail('权限设置失败')
+    }
+})
+
 module.exports = router

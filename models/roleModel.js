@@ -25,8 +25,6 @@ const getRolesList = async function (query) {
         sort
     } = query
     const { page, skipIndex } = util.pager({ pageNum, pageSize })
-    const params = {}
-    if (roleName) params.roleName = roleName
     let RolesListSql = `select * from ${tableName}`
     let where = 'where'
     roleName && (where = db.andLike(where, 'roleName', roleName))
@@ -45,6 +43,9 @@ const getRolesList = async function (query) {
         countSql = `${countSql} ${where}`
     }
     const lists = await db.querySql(RolesListSql)
+    lists.map((item) => {
+        item.permissionList = JSON.parse(item.permissionList) ? JSON.parse(item.permissionList) : null
+    })
     console.log(RolesListSql, '\n', countSql)
     const count = await db.querySql(countSql)
     return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
@@ -98,10 +99,27 @@ const delteRole = async function (query) {
     })
 }
 
+// 权限设置
+const findByIdAndUpdate = async (query) => {
+    return new Promise((reslove, reject) => {
+        const { _id, permissionList } = query
+        const updateTime = util.formateDate(new Date())
+        const permissionRoleSql = `update ${tableName} set permissionList='${JSON.stringify(permissionList)}', updateTime='${updateTime}' where _id='${_id}'`
+        db.querySql(permissionRoleSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('权限设置失败'))
+            })
+    })
+}
+
 module.exports = {
     getRolesAllList,
     getRolesList,
     addRole,
     updateRole,
-    delteRole
+    delteRole,
+    findByIdAndUpdate
 }

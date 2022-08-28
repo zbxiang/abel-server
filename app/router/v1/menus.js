@@ -6,15 +6,21 @@ router.prefix('/menu')
 
 // 菜单列表查询
 router.get('/list', async (ctx) => {
-    // const { menuName, menuState, pageSize, pageNum } = ctx.request.query
+    // const { menuName } = ctx.request.query
     // const params = {}
     // if (menuName) params.menuName = menuName
     // if (menuState) params.menuState = menuState
     // if (pageSize) params.pageSize = pageSize
     // if (pageNum) params.pageNum = pageNum
     const params = ctx.request.query
+    const { menuName } = ctx.request.query
     let rootList = await menuService.getMenuList(params) || []
-    ctx.body = util.success(rootList)
+    if (menuName) {
+        ctx.body = util.success(rootList)
+    } else {
+        const permissionList = util.getTreeMenu(rootList, null, [])
+        ctx.body = util.success(permissionList)
+    }
 })
 
 // 菜单编辑、删除、新增功能
