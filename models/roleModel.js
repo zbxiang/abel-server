@@ -49,7 +49,22 @@ const getRolesList = async function (query) {
     console.log(RolesListSql, '\n', countSql)
     const count = await db.querySql(countSql)
     return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
-} 
+}
+
+// 根据用户拥有的角色，获取权限列表
+const getRolesPermissionList = async function (query) {
+    const _ids = query._ids.join(',')
+    return new Promise((reslove, reject) => {
+        const rolesPermissionSql = `select * from ${tableName} where _id in (${_ids})`
+        db.querySql(rolesPermissionSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('获取权限列表失败'))
+            })
+    })
+}
 
 // 增加角色
 const addRole = async function (query) {
@@ -118,6 +133,7 @@ const findByIdAndUpdate = async (query) => {
 module.exports = {
     getRolesAllList,
     getRolesList,
+    getRolesPermissionList,
     addRole,
     updateRole,
     delteRole,

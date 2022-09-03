@@ -42,10 +42,20 @@ function getTreeDept(rootList, id, list) {
 }
 
 // 部门操作 创建 编辑 删除
-router.post('/addDept', async (ctx) => {
+router.post('/add', async (ctx) => {
     try {
         const params = ctx.request.body
         await deptService.addDept(params)
+        ctx.body = util.success(null, '操作成功')
+    } catch (error) {
+        ctx.body = util.fail(error.stack)
+    }
+})
+
+router.post('/update', async (ctx) => {
+    try {
+        const { _id, ...params } = ctx.request.body
+        await deptService.updateDept(_id, params)
         ctx.body = util.success(null, '操作成功')
     } catch (error) {
         ctx.body = util.fail(error.stack)

@@ -1,6 +1,7 @@
 const router = require('koa-router')()
 const userService = require('../../../models/userModel')
 const menuService = require('./../../../models/menuModel')
+const RoleService = require('./../../../models/roleModel')
 const util = require('../../../utils/util')
 const jwt = require('jsonwebtoken')
 const { PWD_SALT, PRIVATE_KEY, JWT_EXPIRED } = require('./../../../config/index')
@@ -122,10 +123,9 @@ router.post('/delete', async (ctx) => {
 router.get('/getPermissionList', async (ctx) => {
     let authorization = ctx.request.headers.authorization
     let { data } = util.decoded(authorization)
-    let menuList = await getMenuList(data.role, data.roleList)
-    // let actionList = getAction(JSON.parse(JSON.stringify(menuList)))
-    // ctx.body = util.success({ menuList, actionList })
-    // console.log(authorization)
+    let menuList = await getMenuList(data.role, [].slice.call(eval(data.roleList)))
+    let actionList = getAction(JSON.parse(JSON.stringify(menuList)))
+    ctx.body = util.success({ menuList, actionList })
 })
 
 async function getMenuList(userRole, roleKeys) {
@@ -136,16 +136,35 @@ async function getMenuList(userRole, roleKeys) {
     } else {
         // 根据用户拥有的角色，获取权限列表
         // 先查找用户对应的角色有哪些
-        let roleList = await RoleService.getRoleList({ _id: {}})
+        let roleList = await RoleService.getRolesPermissionList({ _ids: roleKeys })
         let permissionList = []
         roleList.map(role => {
-            let { checkedKeys, halfCheckedKeys } = role.permissionList
+            let { checkedKeys, halfCheckedKeys } = JSON.parse(role.permissionList)
             permissionList = permissionList.concat(...checkedKeys, ...halfCheckedKeys)
         })
         permissionList = [...new Set(permissionList)]
-        rootList = await menuService.getMenuList({}) || []
+        rootList = await menuService.getMenuPermissionList({_ids: permissionList})
     }
     return util.getTreeMenu(rootList, null, [])
+}
+
+function getAction(list) {
+    let actionList = []
+    const deep = (arr) => {
+      while (arr.length) {
+        let item = arr.pop()
+        if (item.action) {
+          item.action.map(action => {
+            actionList.push(action.menuCode)
+          })
+        }
+        if (item.children && !item.action) {
+          deep(item.children)
+        }
+      }
+    }
+    deep(list)
+    return actionList
 }
 
 module.exports = router

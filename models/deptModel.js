@@ -8,6 +8,9 @@ const getDeptList = async function (query) {
         const deptListSql = `select * from ${tableName}`
         db.querySql(deptListSql)
             .then(res => {
+                res.map((item) => {
+                    item.parentId = eval(item.parentId.slice())
+                })
                 reslove(res)
             })
             .catch(err => {
@@ -23,7 +26,7 @@ const addDept = async function (query) {
         const values = []
         query.createTime = util.formateDate(new Date())
         query.updateTime = util.formateDate(new Date())
-        query.parentId = arrayToString(eval(query.parentId.slice()))
+        query.parentId = util.arrayToString(eval(query.parentId.slice()))
         delete query.user
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
@@ -52,19 +55,6 @@ const addDept = async function (query) {
             }
         }
     })
-}
-
-// 数组转字符串数组
-const arrayToString = function (array) {
-    let str = ''
-    if (Array.isArray(array)) {
-        str += '['
-        array.forEach((item, index) => {
-            index < array.length - 1 ?  str += `${item}` : str += `${item}, `
-        })
-        str += ']'
-    }
-    return str
 }
 
 module.exports = {

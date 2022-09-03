@@ -20,12 +20,30 @@ const getMenuList = (query) => {
         db.querySql(MenuListSql)
             .then(results => {
                 results.map((item) => {
-                    item.parentId = eval(item.parentId)
+                    item.parentId = [].slice.call(eval(item.parentId))
                 })
                 reslove(results)
             })
             .catch(err => {
                 reject(new Error('菜单列表获取失败'))
+            })
+    })
+}
+
+// 获取菜单权限列表
+const getMenuPermissionList = (query) => {
+    const _ids = query._ids.join(',')
+    return new Promise((reslove, reject) => {
+        const menuPermissionSql = `select * from ${tableName} where _id in (${_ids})`
+        db.querySql(menuPermissionSql)
+            .then(res => {
+                res.map((item) => {
+                    item.parentId = [].slice.call(eval(item.parentId))
+                })
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('获取菜单权限列表失败'))
             })
     })
 }
@@ -163,6 +181,7 @@ const deleteMenu = function (query) {
 
 module.exports = {
     getMenuList,
+    getMenuPermissionList,
     addMenu,
     updateMenu,
     deleteMenu
