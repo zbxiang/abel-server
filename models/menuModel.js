@@ -1,5 +1,5 @@
 const db = require('./../core/db')
-const { getTreeMenu, arrayToString } = require('./../utils/util')
+const { getTreeMenu, arrayToString, arrayLikeArray } = require('./../utils/util')
 const tableName = 'menus'
 const util = require('./../utils/util')
 
@@ -20,30 +20,13 @@ const getMenuList = (query) => {
         db.querySql(MenuListSql)
             .then(results => {
                 results.map((item) => {
-                    item.parentId = [].slice.call(eval(item.parentId))
+                    // item.parentId = [].slice.call(eval(item.parentId))
+                    item.parentId = arrayLikeArray(item.parentId)
                 })
                 reslove(results)
             })
             .catch(err => {
                 reject(new Error('菜单列表获取失败'))
-            })
-    })
-}
-
-// 获取菜单权限列表
-const getMenuPermissionList = (query) => {
-    const _ids = query._ids.join(',')
-    return new Promise((reslove, reject) => {
-        const menuPermissionSql = `select * from ${tableName} where _id in (${_ids})`
-        db.querySql(menuPermissionSql)
-            .then(res => {
-                res.map((item) => {
-                    item.parentId = [].slice.call(eval(item.parentId))
-                })
-                reslove(res)
-            })
-            .catch(err => {
-                reject(new Error('获取菜单权限列表失败'))
             })
     })
 }
@@ -86,13 +69,15 @@ const getMenuPermissionList = (query) => {
 
 // 添加菜单
 const addMenu = function (query) {
+    console.log('sdgksdjgkdsjgjsdgsd')
+    console.log(query)
     return new Promise(async (reslove, reject) => {
         const { sort } = query
         const keys = []
         const values = []
         query.createTime = util.formateDate(new Date())
         query.updateTime = util.formateDate(new Date())
-        query.parentId = util.arrayToString(eval(query.parentId))
+        query.parentId = arrayToString(arrayLikeArray(query.parentId))
         sort == null ? query.sort = 0 : query.sort = sort
         delete query._id
         Object.keys(query).forEach(key => {
@@ -133,7 +118,7 @@ const updateMenu = function (query) {
         delete query._id
         delete query.createTime
         delete query.children
-        query.parentId = util.arrayToString(eval(query.parentId))
+        query.parentId = arrayToString(arrayLikeArray(query.parentId))
         sort == null ? query.sort = 0 : query.sort = sort
         query.updateTime = util.formateDate(new Date())
         Object.keys(query).forEach(key => {
@@ -161,6 +146,24 @@ const updateMenu = function (query) {
                     })
             }
         }
+    })
+}
+
+// 获取菜单权限列表
+const getMenuPermissionList = (query) => {
+    const _ids = query._ids.join(',')
+    return new Promise((reslove, reject) => {
+        const menuPermissionSql = `select * from ${tableName} where _id in (${_ids})`
+        db.querySql(menuPermissionSql)
+            .then(res => {
+                res.map((item) => {
+                    item.parentId = [].slice.call(eval(item.parentId))
+                })
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('获取菜单权限列表失败'))
+            })
     })
 }
 

@@ -104,5 +104,9 @@ module.exports = {
             str += ']'
         }
         return str
+    },
+    // 字符串伪数组转数组
+    arrayLikeArray(like) {
+        return [].slice.call(eval(like))
     }
 }

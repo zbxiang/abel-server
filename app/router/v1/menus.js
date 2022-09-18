@@ -6,14 +6,10 @@ router.prefix('/menu')
 
 // 菜单列表查询
 router.get('/list', async (ctx) => {
-    // const { menuName } = ctx.request.query
-    // const params = {}
-    // if (menuName) params.menuName = menuName
-    // if (menuState) params.menuState = menuState
-    // if (pageSize) params.pageSize = pageSize
-    // if (pageNum) params.pageNum = pageNum
-    const params = ctx.request.query
-    const { menuName } = ctx.request.query
+    const { menuName, menuState } = ctx.request.query
+    const params = {}
+    menuName && (params.menuName = menuName)
+    menuState && (params.menuState = menuState)
     let rootList = await menuService.getMenuList(params) || []
     if (menuName) {
         ctx.body = util.success(rootList)
@@ -23,12 +19,13 @@ router.get('/list', async (ctx) => {
     }
 })
 
+
 // 菜单编辑、删除、新增功能
 // 新增
-router.post('/addMenu', async (ctx) => {
+router.post('/add', async (ctx) => {
+    const { ...params }= ctx.request.body
     try {
-        const query = ctx.request.body
-        await menuService.addMenu(query)
+        await menuService.addMenu(params)
         ctx.body = util.success(null, '操作成功')
     } catch (error) {
         ctx.body = util.fail(error.stack)
@@ -36,10 +33,10 @@ router.post('/addMenu', async (ctx) => {
 })
 
 // 编辑
-router.post('/updateMenu', async (ctx) => {
+router.post('/update', async (ctx) => {
+    const { ...params }= ctx.request.body
     try {
-        const query = ctx.request.body
-        await menuService.updateMenu(query)
+        await menuService.updateMenu(params)
         ctx.body = util.success(null, '操作成功')
     } catch (error) {
         ctx.body = util.fail(error.stack)
