@@ -1,45 +1,36 @@
-/*
- Navicat MySQL Data Transfer
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
- Source Server         : localhost_3306
- Source Server Type    : MySQL
- Source Server Version : 80029
- Source Host           : localhost:3306
- Source Schema         : abel-manager
-
- Target Server Type    : MySQL
- Target Server Version : 80029
- File Encoding         : 65001
-
- Date: 18/09/2022 22:35:22
-*/
-
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for menu
--- ----------------------------
 DROP TABLE IF EXISTS `menu`;
-CREATE TABLE `menu`  (
-  `menuId` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '菜单Id 主键',
-  `menuName` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '菜单名称',
-  `menuPath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '菜单路由',
-  `outLink` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '外链',
-  `menuComponent` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '菜单组件',
-  `menuIcon` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '菜单图标',
-  `menuParent` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '菜单上级',
-  `menuType` tinyint NULL DEFAULT 1 COMMENT '菜单类型',
-  `menuCode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '权限标识',
-  `menuState` tinyint NULL DEFAULT NULL COMMENT '菜单状态',
-  `sort` tinyint NULL DEFAULT 1 COMMENT '排序字段',
-  `createTime` datetime NULL DEFAULT NULL COMMENT '创建时间',
-  `updateTime` datetime NULL DEFAULT NULL COMMENT '更新时间',
+CREATE TABLE `menu` (
+  `menuId` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '菜单Id 主键',
+  `menuName` char(50) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '菜单名称',
+  `menuPath` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '菜单路由',
+  `outLink` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '外链',
+  `menuComponent` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '菜单组件',
+  `menuIcon` char(50) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '菜单图标',
+  `menuParent` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '菜单上级',
+  `menuType` tinyint(4) DEFAULT '1' COMMENT '菜单类型',
+  `menuCode` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '权限标识',
+  `menuState` tinyint(4) DEFAULT NULL COMMENT '菜单状态',
+  `sort` tinyint(4) DEFAULT '1' COMMENT '排序字段',
+  `createTime` datetime DEFAULT NULL COMMENT '创建时间',
+  `updateTime` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`menuId`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Records of menu
--- ----------------------------
 
-SET FOREIGN_KEY_CHECKS = 1;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

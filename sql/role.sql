@@ -7,23 +7,18 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-DROP TABLE IF EXISTS `dept`;
-CREATE TABLE `dept` (
-  `_id` int(11) NOT NULL AUTO_INCREMENT,
-  `deptName` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `userId` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `userName` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `userEmail` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `parentId` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+DROP TABLE IF EXISTS `role`;
+CREATE TABLE `role` (
+  `roleId` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `roleName` char(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `roleDesc` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `roleCode` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `permissionList` json DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
-  PRIMARY KEY (`_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+  PRIMARY KEY (`roleId`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
-INSERT INTO `dept` (`_id`, `deptName`, `userId`, `userName`, `userEmail`, `parentId`, `updateTime`, `createTime`) VALUES
-(9, '技术部', NULL, NULL, NULL, '[null]', NULL, NULL);
-INSERT INTO `dept` (`_id`, `deptName`, `userId`, `userName`, `userEmail`, `parentId`, `updateTime`, `createTime`) VALUES
-(19, '前端部门', '3', 'zbxiang', '1144653975@qq.com', '[9]', '2022-08-22 21:01:58', '2022-08-22 21:01:58');
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
