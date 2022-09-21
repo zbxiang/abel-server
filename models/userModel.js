@@ -46,7 +46,7 @@ const getUserList = async (query) => {
         item.deptId = eval(item.deptId)
         item.roleList = eval(item.roleList)
     })
-    return {lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page}
+    return {lists, totalSize: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page}
 }
 
 // 获取全量用户列表
