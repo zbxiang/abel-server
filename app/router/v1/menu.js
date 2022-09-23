@@ -1,6 +1,6 @@
 const router = require('koa-router')()
-const util = require('./../../../utils/util')
-const menuService = require('./../../../models/menuModel')
+const util = require('../../../utils/util')
+const menuService = require('../../../models/menuModel')
 
 router.prefix('/menu')
 
