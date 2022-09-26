@@ -53,6 +53,26 @@ module.exports = {
         return ''
     },
     // 递归拼接树形列表
+    getTreeMenuList(rootList, id, list) {
+        for (let i = 0; i < rootList.length; i++) {
+            let item = rootList[i]
+            if (String(item.parentIds.slice().pop()) == String(id)) {
+                list.push(item)
+            }
+        }
+        list.map(item => {
+            item.children = []
+            this.getTreeMenuList(rootList, item.id, item.children)
+            if (item.children.length == 0) {
+                delete item.children;
+            } else if (item.children.length > 0 && item.children[0].menuType == 2) {
+                // 快速区分按钮和菜单，用于后期做菜单按钮权限控制
+                item.action = item.children;
+            }
+        })
+        return list;
+    },
+    // 递归拼接树形列表
     getTreeMenu(rootList, id, list) {
         for (let i = 0; i < rootList.length; i++) {
             let item = rootList[i]
@@ -106,7 +126,15 @@ module.exports = {
         return str
     },
     // 字符串伪数组转数组
-    arrayLikeArray(like) {
-        return [].slice.call(eval(like))
+    arrayLikeArray(value) {
+        return [].slice.call(eval(value))
+    },
+    // 布尔转int类型
+    booleanToInt(value) {
+        return value ? 1 : 0
+    },
+    // int类型转布尔型
+    intToBoolean(value) {
+        return value === 1 ? true : false
     }
 }

@@ -1,27 +1,29 @@
 const db = require('./../core/db')
 const { getTreeMenu, arrayToString, arrayLikeArray } = require('./../utils/util')
-const tableName = 'menus'
+const tableName = 'menu'
 const util = require('./../utils/util')
 
 // 获取菜单列表
 const getMenuList = (query) => {
     return new Promise(async (reslove, reject) => {
-        const { menuName, menuState } = query
+        const { name, status } = query
         const params = {}
-        menuName && (params.menuName  = menuName)
-        menuState && (params.menuState = menuState)
+        name && (params.name  = name)
+        status && (params.status = status)
         let MenuListSql = `select * from ${tableName}`
         let where = 'where'
-        menuState && (where = db.and(where, 'menuState', menuState))
-        menuName && (where = db.andLike(where, 'menuName', menuName))
+        status && (where = db.and(where, 'status', status))
+        name && (where = db.andLike(where, 'name', name))
         if (where !== 'where') {
             MenuListSql = `${MenuListSql} ${where}`
         }
         db.querySql(MenuListSql)
             .then(results => {
                 results.map((item) => {
-                    // item.parentId = [].slice.call(eval(item.parentId))
-                    item.parentId = arrayLikeArray(item.parentId)
+                    item.affix = util.intToBoolean(item.affix)
+                    item.cacheable = util.intToBoolean(item.cacheable)
+                    item.hidden = util.intToBoolean(item.hidden)
+                    item.parentIds = util.arrayLikeArray(item.parentIds)
                 })
                 reslove(results)
             })
@@ -68,18 +70,19 @@ const getMenuList = (query) => {
 // }
 
 // 添加菜单
-const addMenu = function (query) {
-    console.log('sdgksdjgkdsjgjsdgsd')
-    console.log(query)
+const menuAdd = function (query) {
     return new Promise(async (reslove, reject) => {
         const { sort } = query
         const keys = []
         const values = []
         query.createTime = util.formateDate(new Date())
         query.updateTime = util.formateDate(new Date())
-        query.parentId = arrayToString(arrayLikeArray(query.parentId))
+        query.affix = util.booleanToInt(query.affix)
+        query.cacheable = util.booleanToInt(query.cacheable)
+        query.hidden = util.booleanToInt(query.hidden)
+        query.parentIds = util.arrayToString(query.parentIds)
         sort == null ? query.sort = 0 : query.sort = sort
-        delete query._id
+        delete query.id
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
                 keys.push(`\`${key}\``)
@@ -91,10 +94,10 @@ const addMenu = function (query) {
             const keysString = keys.join(',')
             const valuesString = values.join(',')
             addMenuSql = `${addMenuSql}${keysString}) VALUES (${valuesString})`
-            const selectSql = `select menuName, url from ${tableName} where menuName='${query.menuName}' and url='${query.url}'`
-            const addMenuFlag = query.url ? await db.querySql(selectSql) : []
+            const selectSql = `select name, path from ${tableName} where name='${query.name}' and path='${query.path}'`
+            const addMenuFlag = query.path ? await db.querySql(selectSql) : []
             if ( addMenuFlag && addMenuFlag.length > 0) {
-                reject(new Error('url已存在, 无法添加'))
+                reject(new Error('菜单名称已存在'))
             } else {
                 db.querySql(addMenuSql)
                     .then(results => {
@@ -185,7 +188,7 @@ const deleteMenu = function (query) {
 module.exports = {
     getMenuList,
     getMenuPermissionList,
-    addMenu,
+    menuAdd,
     updateMenu,
     deleteMenu
 }

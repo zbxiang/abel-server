@@ -15,7 +15,7 @@ CREATE TABLE `user` (
   `userPwd` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '用户密码',
   `userEmail` char(100) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '用户邮箱',
   `mobile` char(11) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '手机号码',
-  `sex` int(11) DEFAULT NULL COMMENT '性别 0：男 1：女 2：其他',
+  `gender` tinyint(4) DEFAULT NULL COMMENT '性别 0：男 1：女 2：其他',
   `deptId` char(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '部门',
   `job` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '岗位',
   `state` int(11) DEFAULT '1' COMMENT '1: 在职 2：离职 3: 试用期',
@@ -25,9 +25,9 @@ CREATE TABLE `user` (
   `lastLoginTime` datetime DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '描述',
   PRIMARY KEY (`userId`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
-INSERT INTO `user` (`userId`, `userName`, `nickName`, `userPwd`, `userEmail`, `mobile`, `sex`, `deptId`, `job`, `state`, `role`, `roleList`, `createTime`, `lastLoginTime`, `remark`) VALUES
+INSERT INTO `user` (`userId`, `userName`, `nickName`, `userPwd`, `userEmail`, `mobile`, `gender`, `deptId`, `job`, `state`, `role`, `roleList`, `createTime`, `lastLoginTime`, `remark`) VALUES
 (5, 'admin', '张宝湘', '7e5266a172a55f69d1d6e14159d03594', 'admin@qq.com', '13715261163', 0, '[9, 19]', 'web前端开发工程师', 1, 1, '[7]', '2022-08-27 22:36:18', '2022-08-27 22:36:18', '该用户为系统管理员');
 
 

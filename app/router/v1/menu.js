@@ -6,15 +6,17 @@ router.prefix('/menu')
 
 // 菜单列表查询
 router.get('/list', async (ctx) => {
-    const { menuName, menuState } = ctx.request.query
+    const { name, status } = ctx.request.query
     const params = {}
-    menuName && (params.menuName = menuName)
-    menuState && (params.menuState = menuState)
-    let rootList = await menuService.getMenuList(params) || []
-    if (menuName) {
-        ctx.body = util.success(rootList)
+    name && (params.name = name)
+    status && (params.status = status)
+    let menuList = await menuService.getMenuList(params) || []
+    if (name) {
+        ctx.body = util.success(menuList)
     } else {
-        const permissionList = util.getTreeMenu(rootList, null, [])
+        console.log('sgksjdgjdjgsd')
+        console.log(menuList)
+        const permissionList = util.getTreeMenuList(menuList, null, [])
         ctx.body = util.success(permissionList)
     }
 })
@@ -25,7 +27,7 @@ router.get('/list', async (ctx) => {
 router.post('/add', async (ctx) => {
     const { ...params }= ctx.request.body
     try {
-        await menuService.addMenu(params)
+        await menuService.menuAdd(params)
         ctx.body = util.success(null, '操作成功')
     } catch (error) {
         ctx.body = util.fail(error.stack)
@@ -44,7 +46,7 @@ router.post('/update', async (ctx) => {
 })
 
 // 编辑
-router.get('/deleteMenu', async (ctx) => {
+router.get('/delete', async (ctx) => {
     try {
         const query = ctx.request.query
         await menuService.deleteMenu(query)
