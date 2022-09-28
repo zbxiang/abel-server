@@ -112,16 +112,19 @@ const menuAdd = function (query) {
 }
 
 // 更新菜单
-const updateMenu = function (query) {
+const menuUpdate = function (query) {
     return new Promise(async (reslove, reject) => {
         const { sort } = query
         const entry = []
-        const _id = query._id
-        const connectSql = `where _id='${_id}'`
-        delete query._id
+        const id = query.id
+        const connectSql = `where id='${id}'`
+        delete query.id
         delete query.createTime
         delete query.children
-        query.parentId = arrayToString(arrayLikeArray(query.parentId))
+        query.affix = util.booleanToInt(query.affix)
+        query.cacheable = util.booleanToInt(query.cacheable)
+        query.hidden = util.booleanToInt(query.hidden)
+        query.parentIds = arrayToString(arrayLikeArray(query.parentIds))
         sort == null ? query.sort = 0 : query.sort = sort
         query.updateTime = util.formateDate(new Date())
         Object.keys(query).forEach(key => {
@@ -130,24 +133,18 @@ const updateMenu = function (query) {
             }
         })
         if (entry.length > 0) {
-            const selectUrl = `select _id from ${tableName} where url='${query.url}'`
-            const addMenuFlag = await db.querySql(selectUrl)
-            if (addMenuFlag.length > 0 && addMenuFlag[0]._id !== _id * 1) {
-                reject(new Error('URL已存在，无法添加'))
-            } else {
-                if (isNaN(query.sort)) {
-                    reject(new Error('sort字段只能为数字'))
-                }
-                let addMenuSql = `UPDATE \`${tableName}\` SET`
-                addMenuSql = `${addMenuSql} ${entry.join(',')} ${connectSql}`
-                db.querySql(addMenuSql)
-                    .then(res => {
-                        reslove(res)
-                    })
-                    .catch(err => {
-                        reject(new Error('更新菜单失败'))
-                    })
+            if (isNaN(query.sort)) {
+                reject(new Error('sort字段只能为数字'))
             }
+            let addMenuSql = `UPDATE \`${tableName}\` SET`
+            addMenuSql = `${addMenuSql} ${entry.join(',')} ${connectSql}`
+            db.querySql(addMenuSql)
+                .then(res => {
+                    reslove(res)
+                })
+                .catch(err => {
+                    reject(new Error('更新菜单失败'))
+                })
         }
     })
 }
@@ -189,6 +186,6 @@ module.exports = {
     getMenuList,
     getMenuPermissionList,
     menuAdd,
-    updateMenu,
+    menuUpdate,
     deleteMenu
 }

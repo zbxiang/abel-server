@@ -38,7 +38,7 @@ router.post('/add', async (ctx) => {
 router.post('/update', async (ctx) => {
     const { ...params }= ctx.request.body
     try {
-        await menuService.updateMenu(params)
+        await menuService.menuUpdate(params)
         ctx.body = util.success(null, '操作成功')
     } catch (error) {
         ctx.body = util.fail(error.stack)
