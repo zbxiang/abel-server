@@ -1,5 +1,5 @@
 const db = require('./../core/db')
-const tableName = 'dept'
+const tableName = 'department'
 const util = require('./../utils/util')
 
 // 获取部门列表
@@ -20,13 +20,13 @@ const getDeptList = async function (query) {
 }
 
 // 新建
-const addDept = async function (query) {
+const deptAdd = async function (query) {
     return new Promise(async (reslove, reject) => {
         const keys = []
         const values = []
         query.createTime = util.formateDate(new Date())
         query.updateTime = util.formateDate(new Date())
-        query.parentId = util.arrayToString(eval(query.parentId.slice()))
+        query.parentIds = util.arrayToString(query.parentIds)
         delete query.user
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
@@ -40,10 +40,10 @@ const addDept = async function (query) {
             const keyString = keys.join(',')
             const valuesString = values.join(',')
             addDeptSql = `${addDeptSql}${keyString}) VALUES (${valuesString})`
-            const selectSql = `select userId, userName, userEmail from ${tableName} where userId='${query.userId}' and userName='${query.userName}' and userEmail='${query.userEmail}'`
-            const addDeptFlag = query.userEmail ? await db.querySql(selectSql) : []
+            const selectSql = `select * from ${tableName} where name='${query.name}'`
+            const addDeptFlag = query.name ? await db.querySql(selectSql) : []
             if (addDeptFlag && addDeptFlag.length > 0) {
-                reject(new Error(`系统检测到有重复的用户，信息如下：${addUserFlag.userId} - ${addUserFlag.userName} - ${addUserFlag.userEmail}`))
+                reject(new Error('部门名称重复'))
             } else {
                 db.querySql(addDeptSql)
                     .then(results => {
@@ -59,5 +59,5 @@ const addDept = async function (query) {
 
 module.exports = {
     getDeptList,
-    addDept
+    deptAdd
 }

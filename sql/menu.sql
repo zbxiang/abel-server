@@ -7,7 +7,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '菜单Id 主键',
   `name` char(50) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '菜单名称',
@@ -28,11 +27,17 @@ CREATE TABLE `menu` (
   `tip` char(10) COLLATE utf8mb4_bin DEFAULT 'NULL' COMMENT 'badge提示',
   `badgeNum` tinyint(4) DEFAULT '1' COMMENT 'badge提示数字',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `menu` (`id`, `name`, `path`, `outLink`, `component`, `icon`, `parentIds`, `menuType`, `menuCode`, `status`, `sort`, `createTime`, `updateTime`, `affix`, `cacheable`, `hidden`, `tip`, `badgeNum`) VALUES
 (2, '系统管理', '/system', '', NULL, 'Setting', '[null]', 1, NULL, 1, 0, '2022-09-26 14:59:15', '2022-09-26 14:59:15', 0, 0, 0, 'new', 1);
-
+INSERT INTO `menu` (`id`, `name`, `path`, `outLink`, `component`, `icon`, `parentIds`, `menuType`, `menuCode`, `status`, `sort`, `createTime`, `updateTime`, `affix`, `cacheable`, `hidden`, `tip`, `badgeNum`) VALUES
+(3, '菜单管理', '/system/menu', '', NULL, '', '[2]', 1, NULL, 1, 0, '2022-09-28 09:13:08', '2022-09-28 10:57:35', 0, 0, 0, '', 1);
+INSERT INTO `menu` (`id`, `name`, `path`, `outLink`, `component`, `icon`, `parentIds`, `menuType`, `menuCode`, `status`, `sort`, `createTime`, `updateTime`, `affix`, `cacheable`, `hidden`, `tip`, `badgeNum`) VALUES
+(4, '角色管理', '/system/role', '', NULL, '', '[2]', 1, NULL, 1, 0, '2022-09-28 09:24:10', '2022-09-28 10:57:56', 0, 0, 0, '', 1);
+INSERT INTO `menu` (`id`, `name`, `path`, `outLink`, `component`, `icon`, `parentIds`, `menuType`, `menuCode`, `status`, `sort`, `createTime`, `updateTime`, `affix`, `cacheable`, `hidden`, `tip`, `badgeNum`) VALUES
+(5, '用户管理', '/system/user', '', NULL, '', '[2]', 1, NULL, 1, 0, '2022-09-28 09:26:35', '2022-09-28 09:26:35', 0, 0, 0, '', 1),
+(6, '部门管理', '/system/dept', '', NULL, '', '[2]', 1, NULL, 1, 0, '2022-09-28 09:28:12', '2022-09-28 10:53:07', 0, 0, 0, '', 1);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

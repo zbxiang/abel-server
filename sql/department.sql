@@ -7,16 +7,15 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE `role` (
-  `roleId` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `roleName` char(50) COLLATE utf8mb4_bin DEFAULT NULL,
-  `roleDesc` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `roleCode` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `permissionList` json DEFAULT NULL,
+CREATE TABLE `department` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` char(10) COLLATE utf8mb4_bin DEFAULT NULL,
+  `code` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `parentIds` varchar(10) COLLATE utf8mb4_bin DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
-  PRIMARY KEY (`roleId`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 
 
