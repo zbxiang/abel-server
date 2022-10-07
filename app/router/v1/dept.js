@@ -1,6 +1,6 @@
 const router = require('koa-router')()
 const util = require('./../../../utils/util')
-const deptService = require('./../../../models/deptModel')
+const deptService = require('../../../models/departmentModel')
 
 router.prefix('/dept')
 

@@ -67,19 +67,24 @@ const getRolesPermissionList = async function (query) {
 }
 
 // 增加角色
-const addRole = async function (query) {
+const roleAdd = async function (query) {
     return new Promise(async (reslove, reject) => {
-        const { roleName, remark } = query
-        const updateTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-        const createTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-        const RoleSql = `INSERT INTO ${tableName} (roleName, remark, updateTime, createTime) VALUES ('${roleName}', '${remark}', '${updateTime}', '${createTime}')`
-        db.querySql(RoleSql)
-            .then(res => {
-                reslove(res)
-            })
-            .catch(err => {
-                reject(new Error('添加角色失败'))
-            })
+        const keys = []
+        const values = []
+        query.createTime = util.formateDate(new Date())
+        query.updateTime = util.formateDate(new Date())
+        
+        // const { roleName, remark } = query
+        // const updateTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
+        // const createTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
+        // const RoleSql = `INSERT INTO ${tableName} (roleName, remark, updateTime, createTime) VALUES ('${roleName}', '${remark}', '${updateTime}', '${createTime}')`
+        // db.querySql(RoleSql)
+        //     .then(res => {
+        //         reslove(res)
+        //     })
+        //     .catch(err => {
+        //         reject(new Error('添加角色失败'))
+        //     })
     })
 }
 
@@ -134,7 +139,7 @@ module.exports = {
     getRolesAllList,
     getRolesList,
     getRolesPermissionList,
-    addRole,
+    roleAdd,
     updateRole,
     delteRole,
     findByIdAndUpdate
