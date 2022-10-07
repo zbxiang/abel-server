@@ -4,11 +4,9 @@ const util = require('./../utils/util')
 
 const login = ({userName, userPwd}, next) => {
     return new Promise((reslove, reject) => {
-        const sql = `select userId, userName, nickName, userEmail, state, role, deptId, roleList from ${tableName} where userName='${userName}' and userPwd='${userPwd}'`
+        const sql = `select * from ${tableName} where userName='${userName}' and userPwd='${userPwd}'`
         db.queryOne(sql, next)
             .then(res => {
-                res.deptId = [].slice.call(eval(res.deptId))
-                res.roleList= [].slice.call(eval(res.roleList))
                 reslove(res)
             })
             .catch(err => {

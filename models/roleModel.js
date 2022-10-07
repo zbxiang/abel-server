@@ -1,5 +1,5 @@
 const db = require('./../core/db')
-const tableName = 'roles'
+const tableName = 'role'
 const util = require('./../utils/util')
 
 // 获取所有角色列表
@@ -17,7 +17,7 @@ const getRolesAllList = async function () {
 }
 
 // 获取角色表信息
-const getRolesList = async function (query) {
+const getRoleList = async function (query) {
     const {
         roleName,
         pageSize,
@@ -51,6 +51,46 @@ const getRolesList = async function (query) {
     return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
 }
 
+// 获取所有菜单角色
+const getAllMenuByRoleId = async function () {
+    return new Promise(async (reslove, reject) => {
+        let MenuListSql = `select * from menu`
+        db.querySql(MenuListSql)
+            .then(results => {
+                results.map((item) => {
+                    item.affix = util.intToBoolean(item.affix)
+                    item.cacheable = util.intToBoolean(item.cacheable)
+                    item.hidden = util.intToBoolean(item.hidden)
+                    item.parentIds = util.arrayLikeArray(item.parentIds)
+                })
+                reslove(results)
+            })
+            .catch(err => {
+                reject(new Error('菜单列表获取失败'))
+            })
+    })
+}
+
+// 根据角色获取菜单列表
+const getMenuListByRoleId = async function () {
+    return new Promise(async (reslove, reject) => {
+        let MenuListSql = `select * from menu`
+        db.querySql(MenuListSql)
+            .then(results => {
+                results.map((item) => {
+                    item.affix = util.intToBoolean(item.affix)
+                    item.cacheable = util.intToBoolean(item.cacheable)
+                    item.hidden = util.intToBoolean(item.hidden)
+                    item.parentIds = util.arrayLikeArray(item.parentIds)
+                })
+                reslove(results)
+            })
+            .catch(err => {
+                reject(new Error('菜单列表获取失败'))
+            })
+    })
+}
+
 // 根据用户拥有的角色，获取权限列表
 const getRolesPermissionList = async function (query) {
     const _ids = query._ids.join(',')
@@ -73,27 +113,42 @@ const roleAdd = async function (query) {
         const values = []
         query.createTime = util.formateDate(new Date())
         query.updateTime = util.formateDate(new Date())
-        
-        // const { roleName, remark } = query
-        // const updateTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-        // const createTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-        // const RoleSql = `INSERT INTO ${tableName} (roleName, remark, updateTime, createTime) VALUES ('${roleName}', '${remark}', '${updateTime}', '${createTime}')`
-        // db.querySql(RoleSql)
-        //     .then(res => {
-        //         reslove(res)
-        //     })
-        //     .catch(err => {
-        //         reject(new Error('添加角色失败'))
-        //     })
+        Object.keys(query).forEach(key => {
+            if (query.hasOwnProperty(key)) {
+                keys.push(`\`${key}\``)
+                values.push(`'${query[key]}'`)
+            }
+        })
+        if (keys.length > 0 && values.length > 0) {
+            let addRoleSql = `INSERT INTO \`${tableName}\` (`
+            const keysString = keys.join(',')
+            const valuesString = values.join(',')
+            addRoleSql = `${addRoleSql}${keysString}) VALUES (${valuesString})`
+            db.querySql(addRoleSql)
+                .then(res => {
+                    reslove(res)
+                })
+                .catch(err => {
+                    reject(new Error('添加角色失败'))
+                })
+        }
     })
 }
 
 // 更新角色
-const updateRole = async function (query) {
+const roleUpdate = async function (query) {
     return new Promise((reslove, reject) => {
-        const {_id, roleName, remark} = query
-        const updateTime = util.formateDate(new Date(), "yyyy-MM-dd hh:mm:ss")
-        const updateRoleSql = `update ${tableName} set roleName='${roleName}', remark='${remark}', updateTime='${updateTime}' where _id='${_id}'`
+        const entry = []
+        query.updateTime = util.formateDate(new Date())
+        const id = query.id
+        const connectSql = `where id='${id}'`
+        Object.keys(query).forEach(key => {
+            if (query.hasOwnProperty(key)) {
+                entry.push(`\`${key}\`='${query[key]}'`)
+            }
+        })
+        let updateRoleSql = `UPDATE \`${tableName}\` SET`
+        updateRoleSql = `${updateRoleSql} ${entry.join(',')} ${connectSql}`
         db.querySql(updateRoleSql)
             .then(res => {
                 reslove(res)
@@ -137,10 +192,12 @@ const findByIdAndUpdate = async (query) => {
 
 module.exports = {
     getRolesAllList,
-    getRolesList,
+    getRoleList,
+    getAllMenuByRoleId,
+    getMenuListByRoleId,
     getRolesPermissionList,
     roleAdd,
-    updateRole,
+    roleUpdate,
     delteRole,
     findByIdAndUpdate
 }

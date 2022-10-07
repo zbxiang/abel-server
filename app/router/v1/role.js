@@ -18,9 +18,32 @@ router.get('/allList', async (ctx) => {
 router.get('/list', async (ctx) => {
     try {
         const params = ctx.request.query
-        let res = await roleService.getRolesList(params) || []
+        let res = await roleService.getRoleList(params) || []
         ctx.body = util.success(res, '操作成功')
     }catch (error) {
+        ctx.body = util.fail(`查询失败：${error.stack}`)
+    }
+})
+
+// 查询所有菜单角色
+router.get('/AllMenuByRoleId', async (ctx) => {
+    try {
+        let menuList = await roleService.getAllMenuByRoleId() || []
+        const permissionList = util.getTreeMenuList(menuList, null, [])
+        ctx.body = util.success(permissionList)
+    } catch (error){
+        ctx.body = util.fail(`查询失败：${error.stack}`)
+    }
+})
+
+// 根据角色获取菜单列表
+router.get('/MenuListByRoleId', async (ctx) => {
+    try {
+        const { ...params } = ctx.request.body
+        let menuList = await roleService.getMenuListByRoleId(params) || []
+        const permissionList = util.getTreeMenuList(menuList, null, [])
+        ctx.body = util.success(permissionList)
+    } catch (error){
         ctx.body = util.fail(`查询失败：${error.stack}`)
     }
 })
@@ -41,12 +64,12 @@ router.post('/add', async (ctx) => {
 // 编辑
 router.post('/update', async (ctx) => {
     try {
-        const { _id, roleName, remark } = ctx.request.body
-        if (_id) {
-            await roleService.updateRole({ _id, roleName, remark })
+        const { ...params } = ctx.request.body
+        if (params.id) {
+            await roleService.roleUpdate(params)
             ctx.body = util.success(null, '操作成功')
         }else {
-            ctx.body = util.fail('缺少参数params: _id')
+            ctx.body = util.fail('缺少参数params: id')
             return
         }
     } catch (error) {

@@ -1,30 +1,41 @@
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*
+ Navicat MySQL Data Transfer
 
+ Source Server         : localhost_3306
+ Source Server Type    : MySQL
+ Source Server Version : 80029
+ Source Host           : localhost:3306
+ Source Schema         : abel-manager
+
+ Target Server Type    : MySQL
+ Target Server Version : 80029
+ File Encoding         : 65001
+
+ Date: 07/10/2022 21:40:32
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for role
+-- ----------------------------
 DROP TABLE IF EXISTS `role`;
-CREATE TABLE `role` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` char(50) COLLATE utf8mb4_bin DEFAULT NULL,
-  `desc` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `code` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `permissionList` json DEFAULT NULL,
-  `updateTime` datetime DEFAULT NULL,
-  `createTime` datetime DEFAULT NULL,
+CREATE TABLE `role`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+  `desc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+  `permissionList` json NULL,
+  `updateTime` datetime NULL DEFAULT NULL,
+  `createTime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC;
 
+-- ----------------------------
+-- Records of role
+-- ----------------------------
+INSERT INTO `role` VALUES (1, '超级管理员', '超级管理员', 'ROLE_admin', 'null', '2022-10-07 12:21:17', '2022-10-07 11:50:11');
+INSERT INTO `role` VALUES (2, '编辑员', '编辑员', 'ROLE_editor', NULL, '2022-10-07 11:51:59', '2022-10-07 11:51:59');
 
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+SET FOREIGN_KEY_CHECKS = 1;
