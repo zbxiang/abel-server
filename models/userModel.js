@@ -108,10 +108,19 @@ const addUser = async (query) => {
 }
 
 // 用户编辑
-const updateUser = async (query) => {
+const userUpdate = async (query) => {
     return new Promise((reslove, reject) => {
-        const { userId, userName, userEmail, mobile, job, state, roleList, deptId, sex, remark } = query
-        const updateUserSql = `update ${tableName} set userName='${userName}', userEmail='${userEmail}', mobile='${mobile}', job='${job}', state='${state}', roleList='${util.arrayToString(eval(roleList))}', deptId='${util.arrayToString(eval(deptId))}', sex='${sex}', remark='${remark}' where userId='${userId}'`
+        const entry = []
+        const id = query.id
+        const connectSql = `where id='${id}'`
+        
+        Object.keys(query).forEach(key => {
+            if (query.hasOwnProperty(key)) {
+                entry.push(`\`${key}\`='${query[key]}'`)
+            }
+        })
+        let updateUserSql = `UPDATE \`${tableName}\` SET`
+        updateUserSql = `${updateUserSql} ${entry.join(',')} ${connectSql}`
         db.querySql(updateUserSql)
             .then(res => {
                 reslove(res)
@@ -143,6 +152,6 @@ module.exports = {
     getUserAllList,
     addUser,
     findOneUser,
-    updateUser,
+    userUpdate,
     deleteUser
 }

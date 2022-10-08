@@ -6,7 +6,7 @@ const util = require('../../../utils/util')
 const jwt = require('jsonwebtoken')
 const { PWD_SALT, PRIVATE_KEY, JWT_EXPIRED } = require('./../../../config/index')
 const md5 = require('md5')
-router.prefix('/users')
+router.prefix('/user')
 
 // 登录
 router.post('/login', async (ctx, next) => {
@@ -84,23 +84,13 @@ router.post('/add', async (ctx) => {
 
 // 用户编辑
 router.post('/update', async (ctx) => {
-    const{ userId, userName, userEmail, mobile, job, state, roleList, deptId, sex, remark} = ctx.request.body
-    if (!deptId) {
-        ctx.body = util.fail('部门不能为空', util.CODE.PARAM_ERROR)
-    }
     try {
-        await userService.updateUser({
-            userId,
-            userName,
-            userEmail,
-            mobile,
-            job,
-            state,
-            roleList,
-            deptId,
-            sex,
-            remark
-        })
+        const { ...params } = ctx.request.body
+        params.userPwd ?
+            (params.userPwd = md5(`${params.userPwd}${PWD_SALT}`))
+            :
+            (delete params.userPwd)
+        await userService.userUpdate(params)
         ctx.body = util.success(null, '更新成功')
     } catch (error) {
         ctx.body = util.fail(error.stack, '更新失败')

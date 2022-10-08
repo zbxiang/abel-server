@@ -46,7 +46,7 @@ app.use(async (ctx, next) => {
 })
 
 app.use(koajwt({ secret: `${PRIVATE_KEY}` }).unless({
-  path: [/^\/api\/users\/login/]
+  path: [/^\/api\/user\/login/]
 }))
 
 // app.use(parser())

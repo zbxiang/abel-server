@@ -2,6 +2,20 @@ const db = require('./../core/db')
 const tableName = 'role'
 const util = require('./../utils/util')
 
+// 获取角色列表
+const getRoleList = async function () {
+    return new Promise(async (reslove, reject) => {
+        let RolesAllListSql = `select * from ${tableName}`
+        db.querySql(RolesAllListSql)
+            .then(res => {
+                reslove(res)
+            })
+            .catch(err => {
+                reject(new Error('获取列表失败'))
+            })
+    })
+}
+
 // 获取所有角色列表
 const getRolesAllList = async function () {
     return new Promise(async (reslove, reject) => {
@@ -17,39 +31,39 @@ const getRolesAllList = async function () {
 }
 
 // 获取角色表信息
-const getRoleList = async function (query) {
-    const {
-        roleName,
-        pageSize,
-        pageNum,
-        sort
-    } = query
-    const { page, skipIndex } = util.pager({ pageNum, pageSize })
-    let RolesListSql = `select * from ${tableName}`
-    let where = 'where'
-    roleName && (where = db.andLike(where, 'roleName', roleName))
-    if (where !== 'where') {
-        RolesListSql = `${RolesListSql} ${where}`
-    }
-    if (sort) {
-        const symbol = sort[0]
-        const column = sort.slice(1, sort.length)
-        const order = symbol === '+' ? 'asc' : 'desc'
-        RolesListSql = `${RolesListSql} order by ${column} ${order}`
-    }
-    RolesListSql = `${RolesListSql} limit ${page.pageSize} offset ${skipIndex}`
-    let countSql = `select count(*) as count from ${tableName}`
-    if (where !== 'where') {
-        countSql = `${countSql} ${where}`
-    }
-    const lists = await db.querySql(RolesListSql)
-    lists.map((item) => {
-        item.permissionList = JSON.parse(item.permissionList) ? JSON.parse(item.permissionList) : null
-    })
-    console.log(RolesListSql, '\n', countSql)
-    const count = await db.querySql(countSql)
-    return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
-}
+// const getRoleList = async function (query) {
+//     const {
+//         roleName,
+//         pageSize,
+//         pageNum,
+//         sort
+//     } = query
+//     const { page, skipIndex } = util.pager({ pageNum, pageSize })
+//     let RolesListSql = `select * from ${tableName}`
+//     let where = 'where'
+//     roleName && (where = db.andLike(where, 'roleName', roleName))
+//     if (where !== 'where') {
+//         RolesListSql = `${RolesListSql} ${where}`
+//     }
+//     if (sort) {
+//         const symbol = sort[0]
+//         const column = sort.slice(1, sort.length)
+//         const order = symbol === '+' ? 'asc' : 'desc'
+//         RolesListSql = `${RolesListSql} order by ${column} ${order}`
+//     }
+//     RolesListSql = `${RolesListSql} limit ${page.pageSize} offset ${skipIndex}`
+//     let countSql = `select count(*) as count from ${tableName}`
+//     if (where !== 'where') {
+//         countSql = `${countSql} ${where}`
+//     }
+//     const lists = await db.querySql(RolesListSql)
+//     lists.map((item) => {
+//         item.permissionList = JSON.parse(item.permissionList) ? JSON.parse(item.permissionList) : null
+//     })
+//     console.log(RolesListSql, '\n', countSql)
+//     const count = await db.querySql(countSql)
+//     return { lists, total: count[0].count, pageTotal: Math.ceil(count[0].count/pageSize), ...page }
+// }
 
 // 获取所有菜单角色
 const getAllMenuByRoleId = async function () {
