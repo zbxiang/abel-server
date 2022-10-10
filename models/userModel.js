@@ -113,7 +113,6 @@ const userUpdate = async (query) => {
         const entry = []
         const id = query.id
         const connectSql = `where id='${id}'`
-        
         Object.keys(query).forEach(key => {
             if (query.hasOwnProperty(key)) {
                 entry.push(`\`${key}\`='${query[key]}'`)
